@@ -791,6 +791,7 @@
               styleEl.textContent = alastorStyle;
               document.head.appendChild(styleEl);
               document.querySelector('.container').outerHTML = alastorBody;
+              window.scrollTo(0, 0);
               overlay.classList.remove('active');
               overlay.style.display = 'none';
               // Remove Vox-specific styles from body
