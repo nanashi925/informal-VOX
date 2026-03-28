@@ -650,19 +650,23 @@
 <!-- BGM play overlay (behind password gate) -->
 <div id="bgm-overlay" style="
   position:fixed; inset:0; z-index:10000;
-  background:rgba(10,10,46,0.92);
+  background:#06061e;
   display:flex; flex-direction:column;
   align-items:center; justify-content:center;
-  cursor:pointer;
   font-family:'Orbitron',sans-serif;
 ">
-  <div style="
+  <div style="color:rgba(0,240,255,0.25); font-size:0.6rem; letter-spacing:0.1em; margin-bottom:2.5rem; line-height:2; text-align:center;">
+    非公式 / 個人利用 / 拡散不可 / 非営利<br>
+    Unofficial / Personal use only / Do not redistribute / Non-commercial
+  </div>
+  <div id="bgm-play-btn" style="
     width:100px; height:100px;
     border:3px solid #00f0ff;
     border-radius:50%;
     display:flex; align-items:center; justify-content:center;
     box-shadow:0 0 30px rgba(0,240,255,0.4);
     margin-bottom:1.5rem;
+    cursor:pointer;
     transition:all 0.3s;
   ">
     <svg width="40" height="40" viewBox="0 0 24 24" fill="#00f0ff">
@@ -674,10 +678,6 @@
   </div>
   <div style="color:rgba(0,240,255,0.4); font-size:0.7rem; letter-spacing:0.15em; margin-top:0.5rem;">
     CLICK TO ENTER // BGM ON
-  </div>
-  <div style="color:rgba(0,240,255,0.25); font-size:0.55rem; letter-spacing:0.1em; margin-top:2rem; line-height:1.8; text-align:center;">
-    非公式 / 個人利用 / 拡散不可 / 非営利<br>
-    Unofficial / Personal use only / Do not redistribute / Non-commercial
   </div>
 </div>
 
@@ -705,13 +705,14 @@
     }
   });
 
-  // === BGM overlay ===
-  document.getElementById('bgm-overlay').addEventListener('click', function() {
+  // === BGM overlay (only play button triggers) ===
+  document.getElementById('bgm-play-btn').addEventListener('click', function() {
     const bgm = document.getElementById('bgm');
+    const overlay = document.getElementById('bgm-overlay');
     bgm.play();
-    this.style.opacity = '0';
-    this.style.transition = 'opacity 0.6s';
-    setTimeout(() => this.style.display = 'none', 600);
+    overlay.style.opacity = '0';
+    overlay.style.transition = 'opacity 0.6s';
+    setTimeout(() => overlay.style.display = 'none', 600);
   });
 
   // === Static noise canvas ===
