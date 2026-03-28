@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VoxTek Industries</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --cyan: #00f0ff;
+    --magenta: #ff0055;
+    --dark-blue: #0a0a2e;
+    --panel-bg: rgba(0, 240, 255, 0.05);
+  }
+
+  body {
+    background: var(--dark-blue);
+    color: var(--cyan);
+    font-family: 'Share Tech Mono', monospace;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* Scanline overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.15) 2px,
+      rgba(0, 0, 0, 0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* Circuit background pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background:
+      radial-gradient(circle at 20% 50%, rgba(0, 240, 255, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 0, 85, 0.06) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    padding: 3rem 0 2rem;
+    border-bottom: 2px solid var(--cyan);
+    position: relative;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--cyan);
+    box-shadow: 0 0 15px var(--cyan), 0 0 30px var(--cyan);
+  }
+
+  .logo {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 4rem;
+    font-weight: 900;
+    letter-spacing: 0.3em;
+    color: var(--cyan);
+    text-shadow:
+      0 0 10px var(--cyan),
+      0 0 40px var(--cyan),
+      0 0 80px rgba(0, 240, 255, 0.5);
+    animation: flicker 4s infinite;
+  }
+
+  .logo span {
+    color: var(--magenta);
+    text-shadow:
+      0 0 10px var(--magenta),
+      0 0 40px var(--magenta),
+      0 0 80px rgba(255, 0, 85, 0.5);
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
+    letter-spacing: 0.5em;
+    margin-top: 0.5rem;
+    color: rgba(0, 240, 255, 0.6);
+    text-transform: uppercase;
+  }
+
+  /* TV screen icon */
+  .tv-icon {
+    width: 120px;
+    height: 100px;
+    border: 3px solid var(--cyan);
+    border-radius: 8px;
+    margin: 0 auto 1.5rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.3), inset 0 0 20px rgba(0, 240, 255, 0.1);
+  }
+
+  .tv-icon::before {
+    content: '📺';
+    font-size: 2.5rem;
+    filter: hue-rotate(160deg);
+  }
+
+  .tv-icon::after {
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 10px;
+    border: 2px solid var(--magenta);
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 0 8px var(--magenta);
+  }
+
+  /* Navigation */
+  nav {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    padding: 1.5rem 0;
+    flex-wrap: wrap;
+  }
+
+  nav a {
+    color: var(--cyan);
+    text-decoration: none;
+    padding: 0.6rem 1.5rem;
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  nav a:hover {
+    background: rgba(0, 240, 255, 0.15);
+    border-color: var(--cyan);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+    color: #fff;
+  }
+
+  nav a.active {
+    background: var(--magenta);
+    border-color: var(--magenta);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+  }
+
+  /* Sections */
+  section {
+    margin: 2.5rem 0;
+    padding: 2rem;
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    background: var(--panel-bg);
+    position: relative;
+  }
+
+  section::before {
+    content: attr(data-label);
+    position: absolute;
+    top: -0.6rem;
+    left: 1.5rem;
+    background: var(--dark-blue);
+    padding: 0 0.8rem;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--magenta);
+    text-transform: uppercase;
+  }
+
+  h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--cyan);
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+  }
+
+  p {
+    line-height: 1.8;
+    color: rgba(0, 240, 255, 0.75);
+    font-size: 0.9rem;
+  }
+
+  .highlight {
+    color: var(--magenta);
+    font-weight: bold;
+  }
+
+  /* Stats grid */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .stat-box {
+    text-align: center;
+    padding: 1.2rem;
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    background: rgba(0, 240, 255, 0.03);
+  }
+
+  .stat-box .number {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--magenta);
+    text-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
+    display: block;
+  }
+
+  .stat-box .label {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(0, 240, 255, 0.5);
+    margin-top: 0.3rem;
+    display: block;
+  }
+
+  /* Service list */
+  .services {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin-top: 1rem;
+  }
+
+  .services li {
+    padding: 0.8rem 1rem;
+    border-left: 3px solid var(--magenta);
+    background: rgba(255, 0, 85, 0.05);
+    font-size: 0.85rem;
+    transition: all 0.3s;
+  }
+
+  .services li:hover {
+    background: rgba(255, 0, 85, 0.12);
+    border-left-color: var(--cyan);
+    transform: translateX(4px);
+  }
+
+  .services li::before {
+    content: '> ';
+    color: var(--magenta);
+  }
+
+  /* CTA button */
+  .cta-wrap {
+    text-align: center;
+    margin: 2.5rem 0;
+  }
+
+  .cta {
+    display: inline-block;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--magenta);
+    border: none;
+    padding: 1rem 3rem;
+    cursor: pointer;
+    text-decoration: none;
+    position: relative;
+    transition: all 0.3s;
+    box-shadow: 0 0 20px rgba(255, 0, 85, 0.4);
+  }
+
+  .cta:hover {
+    background: var(--cyan);
+    color: var(--dark-blue);
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.6);
+    transform: scale(1.05);
+  }
+
+  .cta::before, .cta::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border: 2px solid var(--cyan);
+  }
+  .cta::before { top: -4px; left: -4px; border-right: none; border-bottom: none; }
+  .cta::after { bottom: -4px; right: -4px; border-left: none; border-top: none; }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 2rem 0;
+    border-top: 1px solid rgba(0, 240, 255, 0.15);
+    margin-top: 3rem;
+  }
+
+  footer p {
+    font-size: 0.7rem;
+    color: rgba(0, 240, 255, 0.35);
+    letter-spacing: 0.1em;
+  }
+
+  .footer-bar {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .footer-bar span {
+    font-size: 0.7rem;
+    color: rgba(0, 240, 255, 0.4);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* Glitch / Flicker animation */
+  @keyframes flicker {
+    0%, 95%, 100% { opacity: 1; }
+    96% { opacity: 0.8; }
+    97% { opacity: 1; }
+    98% { opacity: 0.6; transform: translateX(2px); }
+    99% { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Glitch effect on hover */
+  .glitch:hover {
+    animation: glitchText 0.3s ease;
+  }
+
+  @keyframes glitchText {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); color: var(--magenta); }
+    40% { transform: translate(2px, -2px); }
+    60% { transform: translate(-1px, 1px); color: var(--cyan); }
+    80% { transform: translate(1px, -1px); }
+    100% { transform: translate(0); }
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .logo { font-size: 2.5rem; }
+    .stats { grid-template-columns: 1fr; }
+    .services { grid-template-columns: 1fr; }
+    nav a { padding: 0.5rem 1rem; font-size: 0.65rem; }
+  }
+
+  /* Ticker */
+  .ticker-wrap {
+    overflow: hidden;
+    border-top: 1px solid rgba(0, 240, 255, 0.15);
+    border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+    padding: 0.5rem 0;
+    margin: 1.5rem 0;
+  }
+
+  .ticker {
+    display: inline-block;
+    white-space: nowrap;
+    animation: scroll 20s linear infinite;
+    font-size: 0.75rem;
+    color: rgba(0, 240, 255, 0.4);
+    letter-spacing: 0.1em;
+  }
+
+  @keyframes scroll {
+    from { transform: translateX(100vw); }
+    to { transform: translateX(-100%); }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="tv-icon"></div>
+    <div class="logo glitch">VO<span>X</span></div>
+    <div class="subtitle">VoxTek Industries // Hell's #1 Media Empire</div>
+  </header>
+
+  <nav>
+    <a href="#" class="active">Home</a>
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="#stats">Dominance</a>
+    <a href="#contact">Connect</a>
+  </nav>
+
+  <div class="ticker-wrap">
+    <div class="ticker">
+      ◆ VOXTEK SYSTEMS ONLINE ◆ ALL CHANNELS BROADCASTING ◆ SIGNAL STRENGTH: MAXIMUM ◆ PENTAGRAM CITY COVERAGE: 100% ◆ COMPETING OVERLORDS: IRRELEVANT ◆ VOX IS WATCHING ◆ VOXTEK SYSTEMS ONLINE ◆
+    </div>
+  </div>
+
+  <section id="about" data-label="SYS://ABOUT">
+    <h2>俺がこの街のメディアを支配する</h2>
+    <p>
+      ペンタグラムシティの全チャンネル、全周波数、全データストリーム——
+      すべては<span class="highlight">Vox</span>の手の中にある。
+      テクノロジーこそが真の力だ。魔法？時代遅れだね。
+      この街の情報は俺を通して流れる。それが<span class="highlight">事実</span>だ。
+    </p>
+  </section>
+
+  <section id="services" data-label="SYS://SERVICES">
+    <h2>VoxTek サービス</h2>
+    <ul class="services">
+      <li>全域メディア放送</li>
+      <li>魂のデジタル管理</li>
+      <li>催眠プログラミング</li>
+      <li>競合排除ソリューション</li>
+      <li>Vees グループ連携</li>
+      <li>監視ネットワーク構築</li>
+    </ul>
+  </section>
+
+  <section id="stats" data-label="SYS://METRICS">
+    <h2>支配力指標</h2>
+    <div class="stats">
+      <div class="stat-box">
+        <span class="number">100%</span>
+        <span class="label">メディア支配率</span>
+      </div>
+      <div class="stat-box">
+        <span class="number">∞</span>
+        <span class="label">放送チャンネル</span>
+      </div>
+      <div class="stat-box">
+        <span class="number">24/7</span>
+        <span class="label">監視稼働</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-wrap">
+    <a href="#" class="cta">契約する</a>
+  </div>
+
+  <section id="contact" data-label="SYS://CONTACT">
+    <h2>コンタクト</h2>
+    <p>
+      俺と取引したいなら、VoxTekタワーに来い。<br>
+      ペンタグラムシティ中心部、一番高いビル——見逃すわけがない。<br>
+      <span class="highlight">※ アラスターの紹介はお断り。</span>
+    </p>
+  </section>
+
+  <footer>
+    <div class="footer-bar">
+      <span>VoxTek Industries</span>
+      <span>|</span>
+      <span>Pentagram City</span>
+      <span>|</span>
+      <span>Hell</span>
+    </div>
+    <p>&copy; VoxTek Industries. All souls reserved. 全ての魂の権利を保有。</p>
+  </footer>
+
+</div>
+
+</body>
+</html>
