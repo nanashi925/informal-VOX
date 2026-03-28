@@ -592,6 +592,9 @@
 <!-- BGM: VOX-songgg.mp3 -->
 <audio id="bgm" src="VOX-songgg.mp3" loop></audio>
 
+<!-- Alastor BGM: plays during hijack transition -->
+<audio id="alastor-bgm" src="Alastor-songgg.mp3"></audio>
+
 <!-- Password gate (z-index: 10001, above bgm-overlay) -->
 <div id="pw-overlay" style="
   position:fixed; inset:0; z-index:10001;
@@ -738,10 +741,14 @@
     const canvas = document.getElementById('static-canvas');
     const text = document.getElementById('hijack-text');
     const bgm = document.getElementById('bgm');
+    const alastorBgm = document.getElementById('alastor-bgm');
 
-    // Stop BGM
+    // Stop Vox BGM, start Alastor BGM
     if (bgm) {
       bgm.pause();
+    }
+    if (alastorBgm) {
+      alastorBgm.play();
     }
 
     // Show overlay

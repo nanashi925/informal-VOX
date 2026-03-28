@@ -386,13 +386,16 @@
 
 </div>
 
+<!-- Alastor BGM -->
+<audio id="alastor-bgm" src="Alastor-songgg.mp3" loop></audio>
+
 <script>
   // On reload (refresh), redirect back to Vox's site
   if (performance.navigation.type === 1 || performance.getEntriesByType('navigation')[0]?.type === 'reload') {
     window.location.replace('index.html');
   }
-  // Also handle beforeunload to set a flag for next load
-  sessionStorage.setItem('alastor_visited', 'true');
+  // Auto-play Alastor BGM (user already interacted on index.html)
+  document.getElementById('alastor-bgm').play();
 </script>
 
 </body>
