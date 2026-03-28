@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radio Demon Broadcasting</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Special+Elite&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --crimson: #cc0030;
+    --dark-red: #3a0011;
+    --blood: #8b0000;
+    --bone: #d4c5a9;
+    --black: #0d0507;
+  }
+
+  body {
+    background: var(--black);
+    color: var(--bone);
+    font-family: 'Special Elite', cursive;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* Radio static grain overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+    animation: grainShift 0.5s steps(5) infinite;
+  }
+
+  /* Vignette */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(13,5,7,0.8) 100%);
+    pointer-events: none;
+    z-index: 9997;
+  }
+
+  @keyframes grainShift {
+    0% { transform: translate(0, 0); }
+    20% { transform: translate(-5%, 5%); }
+    40% { transform: translate(5%, -5%); }
+    60% { transform: translate(-3%, -3%); }
+    80% { transform: translate(3%, 3%); }
+    100% { transform: translate(0, 0); }
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    padding: 3rem 0 2rem;
+    position: relative;
+  }
+
+  /* Antler decoration */
+  .antlers {
+    font-size: 3rem;
+    color: var(--crimson);
+    text-shadow: 0 0 20px rgba(204, 0, 48, 0.6);
+    margin-bottom: 0.5rem;
+    letter-spacing: 1rem;
+  }
+
+  .logo-al {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--crimson);
+    text-shadow:
+      0 0 10px rgba(204, 0, 48, 0.8),
+      0 0 40px rgba(204, 0, 48, 0.4),
+      0 0 80px rgba(139, 0, 0, 0.3);
+    letter-spacing: 0.15em;
+    position: relative;
+    display: inline-block;
+  }
+
+  .logo-al::before, .logo-al::after {
+    content: '♦';
+    font-size: 1rem;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--crimson);
+  }
+  .logo-al::before { left: -2rem; }
+  .logo-al::after { right: -2rem; }
+
+  .subtitle-al {
+    font-size: 0.9rem;
+    letter-spacing: 0.3em;
+    margin-top: 0.8rem;
+    color: rgba(212, 197, 169, 0.5);
+    text-transform: uppercase;
+    font-style: italic;
+  }
+
+  /* Radio dial decoration */
+  .radio-dial {
+    width: 80px; height: 80px;
+    border: 3px solid var(--crimson);
+    border-radius: 50%;
+    margin: 1.5rem auto;
+    position: relative;
+    box-shadow: 0 0 20px rgba(204, 0, 48, 0.3), inset 0 0 15px rgba(204, 0, 48, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .radio-dial::after {
+    content: '';
+    width: 3px;
+    height: 25px;
+    background: var(--crimson);
+    border-radius: 2px;
+    transform-origin: bottom center;
+    animation: dialSweep 3s ease-in-out infinite;
+    box-shadow: 0 0 8px rgba(204, 0, 48, 0.8);
+  }
+
+  @keyframes dialSweep {
+    0%, 100% { transform: rotate(-40deg); }
+    50% { transform: rotate(40deg); }
+  }
+
+  .divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--crimson), transparent);
+    margin: 2rem 0;
+    box-shadow: 0 0 10px rgba(204, 0, 48, 0.3);
+  }
+
+  /* Sections */
+  section {
+    margin: 2rem 0;
+    padding: 2rem;
+    border: 1px solid rgba(204, 0, 48, 0.2);
+    background: rgba(204, 0, 48, 0.03);
+    position: relative;
+  }
+
+  section::before {
+    content: '🎙';
+    position: absolute;
+    top: -0.8rem;
+    left: 1.5rem;
+    background: var(--black);
+    padding: 0 0.5rem;
+    font-size: 1rem;
+  }
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--crimson);
+    text-shadow: 0 0 8px rgba(204, 0, 48, 0.4);
+  }
+
+  p {
+    line-height: 2;
+    color: rgba(212, 197, 169, 0.8);
+    font-size: 0.95rem;
+  }
+
+  .red { color: var(--crimson); font-weight: bold; }
+
+  /* Quote block */
+  blockquote {
+    border-left: 3px solid var(--crimson);
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    background: rgba(204, 0, 48, 0.05);
+    font-style: italic;
+    color: rgba(212, 197, 169, 0.7);
+    font-size: 1.1rem;
+  }
+
+  blockquote .attr {
+    display: block;
+    text-align: right;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--crimson);
+    font-style: normal;
+  }
+
+  /* Broadcast schedule */
+  .schedule {
+    list-style: none;
+    margin-top: 1rem;
+  }
+
+  .schedule li {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid rgba(204, 0, 48, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+  }
+
+  .schedule li:hover {
+    background: rgba(204, 0, 48, 0.08);
+    padding-left: 1.5rem;
+  }
+
+  .schedule .time {
+    color: var(--crimson);
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    min-width: 100px;
+  }
+
+  .schedule .show {
+    flex: 1;
+    text-align: right;
+    color: rgba(212, 197, 169, 0.6);
+  }
+
+  /* On-air indicator */
+  .on-air {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--crimson);
+    text-transform: uppercase;
+    margin-top: 1rem;
+  }
+
+  .on-air .dot {
+    width: 8px; height: 8px;
+    background: var(--crimson);
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+    box-shadow: 0 0 8px var(--crimson);
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 3rem;
+    border-top: 1px solid rgba(204, 0, 48, 0.15);
+  }
+
+  footer p {
+    font-size: 0.75rem;
+    color: rgba(212, 197, 169, 0.3);
+    letter-spacing: 0.1em;
+  }
+
+  .smile {
+    font-size: 2rem;
+    color: var(--crimson);
+    text-shadow: 0 0 15px rgba(204, 0, 48, 0.6);
+    margin-bottom: 0.5rem;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .logo-al { font-size: 2.5rem; }
+    .schedule li { flex-direction: column; gap: 0.3rem; }
+    .schedule .show { text-align: left; }
+  }
+
+  /* Entry animation */
+  .container {
+    animation: fadeInUp 1.5s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="antlers">⚘ ☽ ⚘</div>
+    <div class="logo-al">ALASTOR</div>
+    <div class="subtitle-al">The Radio Demon // Est. 1933</div>
+    <div class="radio-dial"></div>
+    <div class="on-air"><span class="dot"></span> ON AIR</div>
+  </header>
+
+  <hr class="divider">
+
+  <section>
+    <h2>ようこそ、親愛なるリスナー諸君</h2>
+    <p>
+      やあ！ラジオの悪魔、アラスターだ。<br>
+      テクノロジー？ハッ、<span class="red">あんなおもちゃ</span>は必要ない。<br>
+      本物の力は——声と魅力と、ちょっとした<span class="red">取引</span>さ。
+    </p>
+    <blockquote>
+      "笑顔でいたまえ！笑っていない者を信用してはいけないよ。"
+      <span class="attr">— Alastor</span>
+    </blockquote>
+  </section>
+
+  <section>
+    <h2>本日の放送予定</h2>
+    <ul class="schedule">
+      <li>
+        <span class="time">06:66</span>
+        <span class="show">モーニング・カーニバル</span>
+      </li>
+      <li>
+        <span class="time">13:00</span>
+        <span class="show">地獄のジャズ・アワー</span>
+      </li>
+      <li>
+        <span class="time">18:00</span>
+        <span class="show">魂の取引相談室</span>
+      </li>
+      <li>
+        <span class="time">22:00</span>
+        <span class="show">深夜のシャドウ・シアター</span>
+      </li>
+      <li>
+        <span class="time">??:??</span>
+        <span class="show">特別番組「Voxの失態集」</span>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Voxへのメッセージ</h2>
+    <p>
+      ああ、<span class="red">Vox</span>のサイトから来たのかい？<br>
+      あの子のテクノロジーへの執着は本当に滑稽だね。<br>
+      テレビ？インターネット？<br>
+      <span class="red">ラジオの時代</span>は終わっていないよ。<br><br>
+      ——それに、あの子の「契約」ボタンを押すなんて、<br>
+      君はなかなか<span class="red">面白い</span>ことをするねぇ。
+    </p>
+  </section>
+
+  <footer>
+    <div class="smile">☻</div>
+    <p>Radio Demon Broadcasting — Pentagram City</p>
+    <p style="margin-top:0.5rem;">Stay tuned, and always keep smiling.</p>
+  </footer>
+
+</div>
+
+</body>
+</html>

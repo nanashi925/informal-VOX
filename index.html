@@ -406,6 +406,88 @@
     from { transform: translateX(100vw); }
     to { transform: translateX(-100%); }
   }
+
+  /* Alastor hijack overlay */
+  #hijack-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: #000;
+  }
+
+  #hijack-overlay.active {
+    display: flex;
+  }
+
+  /* Heavy static noise canvas */
+  #static-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  /* Red glitch text */
+  .hijack-text {
+    position: relative;
+    z-index: 1;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 2.2rem;
+    color: #ff1a1a;
+    text-align: center;
+    padding: 0 1rem;
+    text-shadow:
+      0 0 10px #ff0000,
+      0 0 40px #ff0000,
+      0 0 80px rgba(255, 0, 0, 0.5);
+    animation: redGlitch 0.15s infinite;
+    opacity: 0;
+  }
+
+  .hijack-text.show {
+    opacity: 1;
+  }
+
+  @keyframes redGlitch {
+    0% { transform: translate(0); text-shadow: 0 0 10px #ff0000, 0 0 40px #ff0000, -3px 0 #ff0000, 3px 0 #8b0000; }
+    20% { transform: translate(-3px, 2px); text-shadow: 3px 0 #ff0000, -2px 0 #cc0000; }
+    40% { transform: translate(3px, -1px); text-shadow: -3px 0 #ff0000, 2px 0 #990000; clip-path: inset(20% 0 30% 0); }
+    60% { transform: translate(-2px, 1px); text-shadow: 2px 0 #ff1a1a, -3px 0 #8b0000; clip-path: inset(50% 0 10% 0); }
+    80% { transform: translate(2px, -2px); text-shadow: -2px 0 #ff0000, 3px 0 #cc0000; clip-path: none; }
+    100% { transform: translate(0); text-shadow: 0 0 10px #ff0000, 0 0 40px #ff0000; }
+  }
+
+  /* Screen tear lines */
+  .tear-line {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 0, 0, 0.6);
+    z-index: 2;
+    animation: tearMove 0.2s infinite;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+  }
+
+  @keyframes tearMove {
+    0% { top: 10%; opacity: 1; }
+    25% { top: 40%; opacity: 0; }
+    50% { top: 70%; opacity: 1; }
+    75% { top: 30%; opacity: 0; }
+    100% { top: 85%; opacity: 1; }
+  }
+
+  .tear-line:nth-child(2) { animation-delay: 0.07s; }
+  .tear-line:nth-child(3) { animation-delay: 0.13s; height: 2px; }
+
+  @media (max-width: 600px) {
+    .hijack-text { font-size: 1.3rem; }
+  }
 </style>
 </head>
 <body>
@@ -498,6 +580,15 @@
 
 </div>
 
+<!-- Alastor hijack overlay -->
+<div id="hijack-overlay">
+  <canvas id="static-canvas"></canvas>
+  <div class="tear-line"></div>
+  <div class="tear-line"></div>
+  <div class="tear-line"></div>
+  <div class="hijack-text" id="hijack-text">今、契約ボタンを押しましたね…？</div>
+</div>
+
 <!-- BGM: VOX-songgg.mp3 -->
 <audio id="bgm" src="VOX-songgg.mp3" loop></audio>
 
@@ -538,6 +629,71 @@
     this.style.opacity = '0';
     this.style.transition = 'opacity 0.6s';
     setTimeout(() => this.style.display = 'none', 600);
+  });
+
+  // === Static noise canvas ===
+  function drawStatic(canvas) {
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const w = canvas.width, h = canvas.height;
+    const imgData = ctx.createImageData(w, h);
+    const data = imgData.data;
+    for (let i = 0; i < data.length; i += 4) {
+      const v = Math.random() * 255;
+      // Red-tinted static
+      data[i]     = v;                         // R
+      data[i + 1] = v * 0.15;                  // G (suppressed)
+      data[i + 2] = v * 0.1;                   // B (suppressed)
+      data[i + 3] = 80 + Math.random() * 100;  // A
+    }
+    ctx.putImageData(imgData, 0, 0);
+  }
+
+  // === Contract button hijack ===
+  document.querySelector('.cta').addEventListener('click', function(e) {
+    e.preventDefault();
+
+    const overlay = document.getElementById('hijack-overlay');
+    const canvas = document.getElementById('static-canvas');
+    const text = document.getElementById('hijack-text');
+    const bgm = document.getElementById('bgm');
+
+    // Stop BGM
+    if (bgm) {
+      bgm.pause();
+    }
+
+    // Show overlay
+    overlay.classList.add('active');
+
+    // Animate static noise
+    let staticInterval = setInterval(() => drawStatic(canvas), 50);
+
+    // After 0.8s, show the red glitch text
+    setTimeout(() => {
+      text.classList.add('show');
+    }, 800);
+
+    // After 3.5s, intensify static and redirect
+    setTimeout(() => {
+      // Full white flash then redirect
+      clearInterval(staticInterval);
+
+      // Quick flicker
+      let flickerCount = 0;
+      let flickerInterval = setInterval(() => {
+        overlay.style.background = flickerCount % 2 === 0 ? '#ff0000' : '#000';
+        canvas.style.opacity = flickerCount % 2 === 0 ? '0' : '1';
+        flickerCount++;
+        if (flickerCount > 8) {
+          clearInterval(flickerInterval);
+          overlay.style.background = '#000';
+          // Navigate to Alastor's page
+          window.location.href = 'alastor.html';
+        }
+      }, 80);
+    }, 3500);
   });
 </script>
 
