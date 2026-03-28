@@ -592,7 +592,58 @@
 <!-- BGM: VOX-songgg.mp3 -->
 <audio id="bgm" src="VOX-songgg.mp3" loop></audio>
 
-<!-- Autoplay requires user interaction; show play button overlay -->
+<!-- Password gate (z-index: 10001, above bgm-overlay) -->
+<div id="pw-overlay" style="
+  position:fixed; inset:0; z-index:10001;
+  background:#06061e;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  font-family:'Orbitron',sans-serif;
+">
+  <div style="
+    width:60px; height:60px;
+    border:2px solid rgba(0,240,255,0.3);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:1.5rem;
+    box-shadow:0 0 20px rgba(0,240,255,0.15);
+  ">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00f0ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </svg>
+  </div>
+  <div style="color:rgba(0,240,255,0.5); font-size:0.7rem; letter-spacing:0.2em; margin-bottom:1rem;">
+    AUTHORIZATION REQUIRED
+  </div>
+  <input id="pw-input" type="password" placeholder="パスワード" autocomplete="off" style="
+    background:rgba(0,240,255,0.05);
+    border:1px solid rgba(0,240,255,0.3);
+    color:#00f0ff;
+    font-family:'Share Tech Mono',monospace;
+    font-size:1rem;
+    padding:0.7rem 1.2rem;
+    text-align:center;
+    outline:none;
+    width:220px;
+    letter-spacing:0.15em;
+    caret-color:#00f0ff;
+  ">
+  <div id="pw-error" style="
+    color:#ff0055;
+    font-size:0.7rem;
+    letter-spacing:0.1em;
+    margin-top:0.8rem;
+    height:1rem;
+    font-family:'Share Tech Mono',monospace;
+  "></div>
+  <div style="color:rgba(0,240,255,0.15); font-size:0.5rem; letter-spacing:0.1em; margin-top:2rem; line-height:1.8; text-align:center;">
+    非公式 / 個人利用 / 拡散不可 / 非営利<br>
+    Unofficial / Personal use only / Do not redistribute / Non-commercial
+  </div>
+</div>
+
+<!-- BGM play overlay (behind password gate) -->
 <div id="bgm-overlay" style="
   position:fixed; inset:0; z-index:10000;
   background:rgba(10,10,46,0.92);
@@ -627,6 +678,30 @@
 </div>
 
 <script>
+  // === Password gate ===
+  const pwInput = document.getElementById('pw-input');
+  const pwError = document.getElementById('pw-error');
+  const pwOverlay = document.getElementById('pw-overlay');
+
+  pwInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      if (pwInput.value === 'くまさん') {
+        pwOverlay.style.opacity = '0';
+        pwOverlay.style.transition = 'opacity 0.5s';
+        setTimeout(() => pwOverlay.style.display = 'none', 500);
+      } else {
+        pwError.textContent = 'ACCESS DENIED';
+        pwInput.value = '';
+        pwInput.style.borderColor = '#ff0055';
+        setTimeout(() => {
+          pwError.textContent = '';
+          pwInput.style.borderColor = 'rgba(0,240,255,0.3)';
+        }, 1500);
+      }
+    }
+  });
+
+  // === BGM overlay ===
   document.getElementById('bgm-overlay').addEventListener('click', function() {
     const bgm = document.getElementById('bgm');
     bgm.play();
