@@ -776,8 +776,30 @@
         if (flickerCount > 8) {
           clearInterval(flickerInterval);
           overlay.style.background = '#000';
-          // Navigate to Alastor's page
-          window.location.href = 'alastor.html';
+          // Load Alastor's page content without navigation (keeps audio playing)
+          fetch('alastor.html')
+            .then(r => r.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const doc = parser.parseFromString(html, 'text/html');
+              // Replace entire page content but keep audio alive
+              const alastorStyle = doc.querySelector('style').textContent;
+              const alastorBody = doc.querySelector('.container').outerHTML;
+              const styleEl = document.createElement('style');
+              styleEl.textContent = alastorStyle;
+              document.head.appendChild(styleEl);
+              document.querySelector('.container').outerHTML = alastorBody;
+              overlay.classList.remove('active');
+              overlay.style.display = 'none';
+              // Remove Vox-specific styles from body
+              document.body.style.background = '#0d0507';
+              document.title = 'Radio Demon Broadcasting';
+              // Set alastor BGM to loop
+              alastorBgm.loop = true;
+              // Handle refresh -> back to Vox
+              window.addEventListener('beforeunload', function() {});
+              history.pushState({page: 'alastor'}, '', 'alastor.html');
+            });
         }
       }, 80);
     }, 3500);
