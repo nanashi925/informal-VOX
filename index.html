@@ -744,12 +744,9 @@
     const bgm = document.getElementById('bgm');
     const alastorBgm = document.getElementById('alastor-bgm');
 
-    // Stop Vox BGM, start Alastor BGM
+    // Stop Vox BGM
     if (bgm) {
       bgm.pause();
-    }
-    if (alastorBgm) {
-      alastorBgm.play();
     }
 
     // Show overlay
@@ -758,12 +755,15 @@
     // Animate static noise
     let staticInterval = setInterval(() => drawStatic(canvas), 50);
 
-    // After 0.8s, show the red glitch text
+    // After 0.8s, show the red glitch text and start Alastor BGM
     setTimeout(() => {
       text.classList.add('show');
+      if (alastorBgm) {
+        alastorBgm.play();
+      }
     }, 800);
 
-    // After 6s, intensify static and redirect
+    // 6s after Alastor BGM starts (0.8s + 6.0s = 6.8s from click)
     setTimeout(() => {
       // Full white flash then redirect
       clearInterval(staticInterval);
@@ -803,7 +803,7 @@
             });
         }
       }, 80);
-    }, 3500);
+    }, 6800);
   });
 </script>
 
